@@ -12,3 +12,6 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 **/.vscode-test.*
+tree-sitter-mim/**
+tree-sitter-markdown/**
+generate_wasm.sh

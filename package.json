@@ -1,16 +1,16 @@
 {
-  "name": "tree-sitter-vscode",
-  "displayName": "tree-sitter-vscode",
-  "description": "Tree-sitter integration into VSCode",
+  "name": "tree-sitter-mim-vscode",
+  "displayName": "tree-sitter-mim-vscode",
+  "description": "Mim language support for VSCode using tree-sitter",
   "author": {
-    "name": "AlecGhost",
-    "url": "https://github.com/AlecGhost"
+    "name": "fodinabor",
+    "url": "https://github.com/fodinabor"
   },
-  "publisher": "AlecGhost",
-  "version": "0.3.0",
+  "publisher": "fodinabor",
+  "version": "0.1.0",
   "license": "Apache-2.0",
   "repository": {
-    "url": "https://github.com/AlecGhost/tree-sitter-vscode"
+    "url": "https://github.com/fodinabor/tree-sitter-mim-vscode"
   },
   "icon": "icon.png",
   "engines": {
@@ -26,9 +26,9 @@
   "contributes": {
     "configuration": [
       {
-        "title": "tree-sitter-vscode config",
+        "title": "tree-sitter-mim-vscode config",
         "properties": {
-          "tree-sitter-vscode.languageConfigs": {
+          "tree-sitter-mim-vscode.languageConfigs": {
             "description": "A list of objects with the keys \"lang\", \"parser\", and \"highlights\". Optionally \"injections\", \"injectionOnly\", and \"semanticTokenTypeMappings\" can be added.",
             "type": "array",
             "items": {
@@ -88,7 +88,7 @@
             },
             "default": []
           },
-          "tree-sitter-vscode.debug": {
+          "tree-sitter-mim-vscode.debug": {
             "type": "boolean",
             "default": false,
             "description": "Enable debug logging"
@@ -98,16 +98,25 @@
     ],
     "commands": [
       {
-        "command": "tree-sitter-vscode.reload",
-        "title": "tree-sitter-vscode: Reload"
+        "command": "tree-sitter-mim-vscode.reload",
+        "title": "tree-sitter-mim-vscode: Reload"
       }
-    ]
+    ],
+		"languages": [
+			{
+				"id": "mim",
+				"extensions": [
+					".mim"
+				],
+				"configuration": "./mim-language-configuration.json"
+			}
+		]
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
     "compile": "webpack",
     "watch": "webpack --watch",
-    "package": "webpack --mode production --devtool hidden-source-map",
+    "package": "./generate_wasm.sh && webpack --mode production --devtool hidden-source-map",
     "compile-tests": "tsc -p . --outDir out",
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
@@ -124,7 +133,8 @@
     "ts-loader": "^9.5.2",
     "typescript": "^5.8.3",
     "webpack": "^5.99.9",
-    "webpack-cli": "^6.0.1"
+    "webpack-cli": "^6.0.1",
+    "copy-webpack-plugin": "^13.0.0"
   },
   "dependencies": {
     "@vscode/vsce": "^3.4.2",

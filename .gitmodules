@@ -1,0 +1,6 @@
+[submodule "tree-sitter-markdown"]
+	path = tree-sitter-markdown
+	url = ../../tree-sitter-grammars/tree-sitter-markdown
+[submodule "tree-sitter-mim"]
+	path = tree-sitter-mim
+	url = https://github.com/fodinabor/tree-sitter-mim

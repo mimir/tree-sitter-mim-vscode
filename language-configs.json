@@ -1,0 +1,131 @@
+[{
+    "lang": "mim",
+    "parser": "${extension_dir}/tree-sitter-mim.wasm",
+    "highlights": "${extension_dir}/queries/mim/highlights.scm",
+    "injections": "${extension_dir}/queries/mim/injections.scm",
+    "semanticTokenTypeMappings": {
+        "constant.builtin": {
+            "targetTokenType": "number"
+        },
+        "constant.numeric": {
+            "targetTokenType": "number"
+        },
+        "constant.character": {
+            "targetTokenType": "string"
+        },
+        "variable.member": {
+            "targetTokenType": "property"
+        },
+        "variable.builtin": {
+            "targetTokenType": "function",
+            "modifiers": [
+                "defaultLibrary"
+            ]
+        },
+        "variable.parameter": {
+            "targetTokenType": "parameter"
+        },
+        "variable.function": {
+            "targetTokenType": "function"
+        },
+        "type.builtin": {
+            "targetTokenType": "macro",
+            "modifiers": [
+                "defaultLibrary"
+            ]
+        },
+        "comment.line.documentation": {
+            "targetTokenType": "comment",
+            "modifiers": [
+                "documentation"
+            ]
+        },
+        "comment.block": {
+            "targetTokenType": "comment"
+        },
+        "comment.line": {
+            "targetTokenType": "comment"
+        },
+        "keyword.function": {
+            "targetTokenType": "keyword"
+        },
+        "keyword.storage.type": {
+            "targetTokenType": "keyword"
+        },
+        "keyword.control.import": {
+            "targetTokenType": "keyword"
+        },
+        "punctuation.delimiter": {
+            "targetTokenType": "operator"
+        },
+        "punctuation.bracket": {
+            "targetTokenType": "operator"
+        }
+    }
+},
+{
+    "lang": "markdown",
+    "parser": "${extension_dir}/tree-sitter-markdown.wasm",
+    "highlights": "${extension_dir}/queries/markdown/highlights.scm",
+    "injections": "${extension_dir}/queries/markdown/injections.scm",
+    "injectionOnly": true,
+    "semanticTokenTypeMappings": {
+        "punctuation.special": {
+            "targetTokenType": "operator"
+        },
+        "punctuation.delimiter": {
+            "targetTokenType": "operator"
+        },
+        "text.title": {
+            "targetTokenType": "namespace"
+        },
+        "text.reference": {
+            "targetTokenType": "function"
+        },
+        "text.uri": {
+            "targetTokenType": "string"
+        },
+        "text.literal": {
+            "targetTokenType": "string"
+        },
+        "string.escape": {
+            "targetTokenType": "string"
+        },
+        "none": {
+            "targetTokenType": "function"
+        }
+    }
+},
+{
+    "lang": "markdown-inline",
+    "parser": "${extension_dir}/tree-sitter-markdown_inline.wasm",
+    "highlights": "${extension_dir}/queries/markdown-inline/highlights.scm",
+    "injectionOnly": true,
+    "semanticTokenTypeMappings": {
+        "punctuation.special": {
+            "targetTokenType": "operator"
+        },
+        "punctuation.delimiter": {
+            "targetTokenType": "operator"
+        },
+        "text.title": {
+            "targetTokenType": "namespace"
+        },
+        "text.reference": {
+            "targetTokenType": "function"
+        },
+        "text.uri": {
+            "targetTokenType": "string"
+        },
+        "text.literal": {
+            "targetTokenType": "string"
+        },
+        "string.escape": {
+            "targetTokenType": "string"
+        },
+        "code_fence_content": {
+            "targetTokenType": "function"
+        }
+    }
+}
+]

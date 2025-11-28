@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import * as ts from 'web-tree-sitter';
 import { Parser } from 'web-tree-sitter';
 
-const OUTPUT_CHANNEL = vscode.window.createOutputChannel("tree-sitter-vscode");
+const OUTPUT_CHANNEL = vscode.window.createOutputChannel("tree-sitter-mim-vscode");
 
 // VSCode default token types and modifiers from:
 // https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide#standard-token-types-and-modifiers
@@ -46,7 +46,7 @@ type Injection = {
 
 function log(messageOrCallback: string | (() => string), data?: any) {
 	// Only log in debug mode
-	const config = vscode.workspace.getConfiguration("tree-sitter-vscode");
+	const config = vscode.workspace.getConfiguration("tree-sitter-mim-vscode");
 	const isDebugMode = config.get("debug", false);
 
 	if (isDebugMode) {
@@ -59,6 +59,19 @@ function log(messageOrCallback: string | (() => string), data?: any) {
 	}
 }
 
+function replaceExtensionDirPlaceholder(filePath: string, extensionPath: string): string {
+	return filePath.replace("${extension_dir}", extensionPath);
+}
+
+function replaceExtensionDirPlaceholderInConfig(config: any, extensionPath: string): any {
+	return {
+		...config,
+		parser: replaceExtensionDirPlaceholder(config.parser, extensionPath),
+		highlights: replaceExtensionDirPlaceholder(config.highlights, extensionPath),
+		injections: config.injections ? replaceExtensionDirPlaceholder(config.injections, extensionPath) : undefined,
+	};
+}
+
 /**
  * Called once on extension initialization and again if the reload command is triggered.
  * It reads the configuration and registers the semantic tokens provider.
@@ -66,8 +79,12 @@ function log(messageOrCallback: string | (() => string), data?: any) {
 export function activate(context: vscode.ExtensionContext) {
 	log("Extension activated");
 	// setup the semantic tokens provider
-	const rawConfigs = vscode.workspace.getConfiguration("tree-sitter-vscode").get("languageConfigs");
-	const configs = parseConfigs(rawConfigs);
+	const defaultConfigs: Config[] = parseConfigs(
+		JSON.parse(fs.readFileSync(path.join(context.extensionPath, "language-configs.json"), "utf-8"))
+			.map((config: any) => replaceExtensionDirPlaceholderInConfig(config, context.extensionPath)));
+
+	const rawConfigs = vscode.workspace.getConfiguration("tree-sitter-mim-vscode").get("languageConfigs");
+	const configs = [...defaultConfigs, ...parseConfigs(rawConfigs)];
 	log(() => { return `Configured languages: ${configs.map((c) => c.lang).join(", ")}`; });
 	const languageMap = configs
 		.filter(config => !config.injectionOnly)
@@ -80,7 +97,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(provider);
 
 	// setup the reload command
-	const reload = vscode.commands.registerCommand("tree-sitter-vscode.reload",
+	const reload = vscode.commands.registerCommand("tree-sitter-mim-vscode.reload",
 		() => {
 			// dispose of the old providers and clear the list of subscriptions
 			reload.dispose();
