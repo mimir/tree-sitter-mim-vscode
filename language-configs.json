@@ -49,6 +49,9 @@
         "keyword.function": {
             "targetTokenType": "keyword"
         },
+        "keyword.control": {
+            "targetTokenType": "keyword"
+        },
         "keyword.storage.type": {
             "targetTokenType": "keyword"
         },

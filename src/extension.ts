@@ -84,11 +84,29 @@ export function activate(context: vscode.ExtensionContext) {
 			.map((config: any) => replaceExtensionDirPlaceholderInConfig(config, context.extensionPath)));
 
 	const rawConfigs = vscode.workspace.getConfiguration("tree-sitter-mim-vscode").get("languageConfigs");
-	const configs = [...defaultConfigs, ...parseConfigs(rawConfigs)];
-	log(() => { return `Configured languages: ${configs.map((c) => c.lang).join(", ")}`; });
+	
+	const configs = defaultConfigs.map(dc => {
+		const override = (rawConfigs as any[])?.find(rc => rc.lang === dc.lang);
+		if (override) {
+			const mergedConfig = Object.assign({}, dc, replaceExtensionDirPlaceholderInConfig(override, context.extensionPath));
+			return mergedConfig;
+		} else {
+			return dc;
+		}
+	}).concat(
+		(rawConfigs as any[] || [])
+			.filter(rc => !defaultConfigs.some(dc => dc.lang === rc.lang))
+			.map(rc => replaceExtensionDirPlaceholderInConfig(rc, context.extensionPath))
+	);
+
+	log(() => { return `Configured languages hi: ${configs.map((c) => c.lang).join(", ")}`; });
+
+	log(() => { return `configs: ${JSON.stringify(configs)}`; });
+	
 	const languageMap = configs
 		.filter(config => !config.injectionOnly)
 		.map(config => { return { language: config.lang }; });
+	
 	const provider = vscode.languages.registerDocumentSemanticTokensProvider(
 		languageMap,
 		new SemanticTokensProvider(configs),
@@ -356,7 +374,7 @@ class SemanticTokensProvider implements vscode.DocumentSemanticTokensProvider {
 
 					log(() => {
 						return `Applied type mapping for original name: ${originalCaptureName} → ${mapping.targetTokenType}${mapping.targetTokenModifiers && mapping.targetTokenModifiers.length > 0
-							? ` with modifiers: ${mapping.targetTokenModifiers.join(", ")}` : ""}`;
+							? ` with modifiers: ${mapping.targetTokenModifiers.join(", ")}` : ""} (${start.line},${start.character})-(${end.line},${end.character}))`;
 					});
 				}
 				// If no mapping for the full name, check for just the type
@@ -387,11 +405,18 @@ class SemanticTokensProvider implements vscode.DocumentSemanticTokensProvider {
 			});
 
 		return unsplitTokens.flatMap(token => {
+			// Get all tokens that cover the same range
+			const sametoken = unsplitTokens.filter(t => token.range.isEqual(t.range));
+			if (sametoken.length > 1) {
+				// the last one wins
+				token = sametoken[sametoken.length - 1];
+			}
+
 			// Get all tokens contained within this token
 			const contained = unsplitTokens.filter(t =>
 				(!(token.range.isEqual(t.range))) && token.range.contains(t.range)
 			);
-
+			log(() => { return `Token ${token.type} at ${token.range.start.line},${token.range.start.character}-${token.range.end.line},${token.range.end.character}.`; })
 			if (contained.length > 0) {
 				// Sort contained tokens by their start position
 				const sortedContained = contained.sort((a, b) =>
@@ -425,7 +450,8 @@ class SemanticTokensProvider implements vscode.DocumentSemanticTokensProvider {
 			} else {
 				return token;
 			}
-		}).flatMap(splitToken);
+		}).sort((a, b) => { return a.range.start.line == b.range.start.line ? a.range.start.character - b.range.start.character : a.range.start.line - b.range.start.line; }
+		).flatMap(splitToken);
 	}
 
 	/**
