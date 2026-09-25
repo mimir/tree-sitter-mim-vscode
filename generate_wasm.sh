@@ -2,8 +2,6 @@
 
 DIR=`pwd`
 
-cp node_modules/web-tree-sitter/tree-sitter.wasm $DIR/dist
-
 cd tree-sitter-markdown/tree-sitter-markdown
 tree-sitter generate --abi 15
 tree-sitter build --wasm

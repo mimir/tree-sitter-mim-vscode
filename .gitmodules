@@ -3,4 +3,4 @@
 	url = ../../tree-sitter-grammars/tree-sitter-markdown
 [submodule "tree-sitter-mim"]
 	path = tree-sitter-mim
-	url = https://github.com/fodinabor/tree-sitter-mim
+	url = https://github.com/mimir/tree-sitter-mim

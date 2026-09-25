@@ -7,14 +7,14 @@
     "url": "https://github.com/fodinabor"
   },
   "publisher": "MimIRExtensions",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "license": "Apache-2.0",
   "repository": {
-    "url": "https://github.com/fodinabor/tree-sitter-mim-vscode"
+    "url": "https://github.com/mimir/tree-sitter-mim-vscode"
   },
   "icon": "icon.png",
   "engines": {
-    "vscode": "^1.100.0"
+    "vscode": "^1.110.0"
   },
   "categories": [
     "Programming Languages"
@@ -29,7 +29,7 @@
         "title": "tree-sitter-mim-vscode config",
         "properties": {
           "tree-sitter-mim-vscode.languageConfigs": {
-            "description": "A list of objects with the keys \"lang\", \"parser\", and \"highlights\". Optionally \"injections\", \"injectionOnly\", and \"semanticTokenTypeMappings\" can be added.",
+            "description": "A list of objects with the keys \"lang\", \"parser\", and \"highlights\". Optionally \"injections\", \"injectionOnly\", \"folds\", and \"semanticTokenTypeMappings\" can be added.",
             "type": "array",
             "items": {
               "type": "object",
@@ -57,6 +57,13 @@
                     null
                   ],
                   "description": "The path to the injections `.scm` file"
+                },
+                "folds": {
+                  "type": [
+                    "string",
+                    null
+                  ],
+                  "description": "The path to the folds `.scm` file"
                 },
                 "injectionOnly": {
                   "type": "boolean",
@@ -102,42 +109,47 @@
         "title": "tree-sitter-mim-vscode: Reload"
       }
     ],
-		"languages": [
-			{
-				"id": "mim",
-				"extensions": [
-					".mim"
-				],
-				"configuration": "./mim-language-configuration.json"
-			}
-		]
+    "languages": [
+      {
+        "id": "mim",
+        "extensions": [
+          ".mim"
+        ],
+        "configuration": "./mim-language-configuration.json"
+      }
+    ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run package",
-    "compile": "webpack",
+    "lint:check": "eslint src/ --ext ts",
+    "lint:fix": "eslint src/ --ext ts --fix",
+    "format:check": "prettier src/ --check",
+    "format:fix": "prettier src/ --write",
+    "clean": "rm -rf node_modules && rm -rf dist",
+    "prebuild": "rm -rf dist && mkdir dist && cp node_modules/web-tree-sitter/web-tree-sitter.wasm dist/",
+    "build": "tsc --noEmit && webpack && npm run format:check && npm run lint:check",
     "watch": "webpack --watch",
+    "pretest": "npm run build",
+    "test": "vscode-test",
     "package": "./generate_wasm.sh && webpack --mode production --devtool hidden-source-map",
-    "compile-tests": "tsc -p . --outDir out",
-    "watch-tests": "tsc -p . -w --outDir out",
-    "pretest": "npm run compile-tests && npm run compile && npm run lint",
-    "lint": "eslint src --ext ts",
-    "test": "vscode-test"
+    "vscode:prepublish": "npm run build && npm run package"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
-    "@types/node": "22.x",
-    "@types/vscode": "^1.100.0",
-    "@typescript-eslint/eslint-plugin": "^8.32.1",
-    "@typescript-eslint/parser": "^8.32.1",
-    "eslint": "^9.27.0",
-    "ts-loader": "^9.5.2",
-    "typescript": "^5.8.3",
-    "webpack": "^5.99.9",
-    "webpack-cli": "^6.0.1",
-    "copy-webpack-plugin": "^13.0.0"
+    "@types/node": "25.x",
+    "@types/vscode": "^1.110.0",
+    "@typescript-eslint/eslint-plugin": "^8.57.0",
+    "@typescript-eslint/parser": "^8.57.0",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "3.7.4",
+    "ts-loader": "^9.5.4",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.49.0",
+    "webpack": "^5.105.4",
+    "webpack-cli": "^6.0.1"
   },
   "dependencies": {
-    "@vscode/vsce": "^3.4.2",
-    "web-tree-sitter": "^0.25.4"
+    "@vscode/vsce": "^3.7.1",
+    "web-tree-sitter": "^0.26.6"
   }
 }

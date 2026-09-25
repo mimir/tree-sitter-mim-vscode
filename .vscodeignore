@@ -16,3 +16,4 @@ tree-sitter-mim/**
 tree-sitter-markdown/**
 generate_wasm.sh
 .gitmodules
+eslint.config.mjs
