@@ -52,6 +52,12 @@ npx vsce package
 Packaging runs `generate_wasm.sh`, which regenerates the Mim and Markdown parsers from the submodules, compiles them to `.wasm`, and copies their queries into `queries/`.
 To pick up a newer grammar, update the `tree-sitter-mim` submodule and repackage.
 
+## Debug
+
+Open the project in VS Code, run `npm install` and `npm run package` (to build the `.wasm` parsers and queries), and press `F5`.
+This launches an Extension Development Host window with the extension loaded.
+Set breakpoints in the source code and reload the host window after making changes.
+
 ## License
 
 [Apache-2.0](LICENSE.txt)

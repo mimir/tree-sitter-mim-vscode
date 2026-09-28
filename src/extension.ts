@@ -455,6 +455,8 @@ function luaPatternToRegex(pattern: string): string {
       }
     } else if (c === "-" && !inClass) {
       result += "*?";
+    } else if ("{}|".includes(c)) {
+      result += "\\\\" + c;
     } else {
       if (c === "[") inClass = true;
       if (c === "]") inClass = false;
@@ -490,12 +492,14 @@ async function initLanguage(config: Config): Promise<Language> {
   const highlightQuery = new ts.Query(lang, queryText);
   let injectionQuery = undefined;
   if (config.injections !== undefined) {
-    const injectionText = fs.readFileSync(config.injections, "utf-8");
+    const injectionText = translateLuaMatch(
+      fs.readFileSync(config.injections, "utf-8"),
+    );
     injectionQuery = new ts.Query(lang, injectionText);
   }
   let foldQuery = undefined;
   if (config.folds !== undefined) {
-    const foldText = fs.readFileSync(config.folds, "utf-8");
+    const foldText = translateLuaMatch(fs.readFileSync(config.folds, "utf-8"));
     foldQuery = new ts.Query(lang, foldText);
   }
   return {
@@ -684,9 +688,15 @@ class SemanticTokensProvider implements vscode.DocumentSemanticTokensProvider {
   }
 
   matchesToTokens(lang: Language, matches: ts.QueryMatch[]): Token[] {
+    const patterns = new Map<Token, number>();
     const unsplitTokens: Token[] = matches
-      .flatMap((match) => match.captures)
-      .flatMap((capture) => {
+      .flatMap((match) =>
+        match.captures.map((capture) => ({
+          capture,
+          pattern: match.patternIndex,
+        })),
+      )
+      .flatMap(({ capture, pattern }) => {
         // Store the original capture name before splitting
         const originalCaptureName = capture.name;
         let { type, modifiers: modifiers } = parseCaptureName(capture.name);
@@ -747,6 +757,7 @@ class SemanticTokensProvider implements vscode.DocumentSemanticTokensProvider {
             type: type,
             modifiers: validModifiers,
           };
+          patterns.set(token, pattern);
           return token;
         } else {
           return [];
@@ -755,9 +766,16 @@ class SemanticTokensProvider implements vscode.DocumentSemanticTokensProvider {
 
     return unsplitTokens
       .flatMap((token, i) => {
-        // the last match wins among tokens covering the same range
+        // as in Neovim, the later pattern wins among tokens covering the same range
+        const pattern = (t: Token) => patterns.get(t) ?? 0;
+        const beats = (t: Token, j: number) => {
+          const [p, q] = [pattern(t), pattern(token)];
+          return p > q || (p === q && j > i);
+        };
         if (
-          unsplitTokens.slice(i + 1).some((t) => token.range.isEqual(t.range))
+          unsplitTokens.some(
+            (t, j) => token.range.isEqual(t.range) && beats(t, j),
+          )
         )
           return [];
 
