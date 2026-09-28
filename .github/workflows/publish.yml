@@ -1,0 +1,50 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write # to create the GitHub release
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Check that the tag matches the package version
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if [ "${GITHUB_REF_NAME#v}" != "$version" ]; then
+            echo "::error::tag $GITHUB_REF_NAME does not match package.json version $version"
+            exit 1
+          fi
+
+      - run: npm ci
+
+      # `tree-sitter build --wasm` falls back to the emscripten docker image, which the runner provides
+      - name: Install tree-sitter CLI
+        run: npm install --global tree-sitter-cli@0.26.9
+
+      # runs `vscode:prepublish`, which builds the extension and regenerates the grammar .wasm files
+      - name: Package
+        run: npx vsce package --out tree-sitter-mim-vscode-${GITHUB_REF_NAME#v}.vsix
+
+      - name: Publish to the Visual Studio Marketplace
+        run: npx vsce publish --packagePath tree-sitter-mim-vscode-${GITHUB_REF_NAME#v}.vsix
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+
+      - name: Create GitHub release
+        run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --generate-notes tree-sitter-mim-vscode-${GITHUB_REF_NAME#v}.vsix
+        env:
+          GH_TOKEN: ${{ github.token }}
