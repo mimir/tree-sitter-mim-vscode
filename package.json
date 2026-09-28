@@ -127,6 +127,7 @@
     "clean": "rm -rf node_modules && rm -rf dist",
     "prebuild": "rm -rf dist && mkdir dist && cp node_modules/web-tree-sitter/web-tree-sitter.wasm dist/",
     "build": "tsc --noEmit && webpack && npm run format:check && npm run lint:check",
+    "compile": "npm run prebuild && webpack",
     "watch": "webpack --watch",
     "pretest": "npm run build",
     "test": "vscode-test",

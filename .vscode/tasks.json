@@ -1,0 +1,25 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "compile",
+      "type": "npm",
+      "script": "compile",
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": "$tsc"
+    },
+    {
+      // rebuilds the grammar .wasm files and copies their queries, run it after updating a submodule
+      "label": "generate parsers",
+      "type": "shell",
+      "command": "./generate_wasm.sh",
+      "problemMatcher": []
+    },
+    {
+      "label": "generate parsers and compile",
+      "dependsOn": ["generate parsers", "compile"],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    }
+  ]
+}
