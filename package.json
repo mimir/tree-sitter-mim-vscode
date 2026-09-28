@@ -142,6 +142,7 @@
     "@typescript-eslint/parser": "^8.57.0",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
+    "ovsx": "^1.2.0",
     "prettier": "3.7.4",
     "ts-loader": "^9.5.4",
     "typescript": "^5.9.3",
@@ -150,7 +151,7 @@
     "webpack-cli": "^6.0.1"
   },
   "dependencies": {
-    "@vscode/vsce": "^3.7.1",
+    "@vscode/vsce": "^4.0.0",
     "web-tree-sitter": "^0.26.6"
   }
 }

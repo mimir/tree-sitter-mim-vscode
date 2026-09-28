@@ -39,12 +39,12 @@ jobs:
       - name: Package
         run: npx vsce package --out tree-sitter-mim-vscode-${GITHUB_REF_NAME#v}.vsix
 
-      - name: Publish to the Visual Studio Marketplace
-        run: npx vsce publish --packagePath tree-sitter-mim-vscode-${GITHUB_REF_NAME#v}.vsix
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
-
       - name: Create GitHub release
         run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --generate-notes tree-sitter-mim-vscode-${GITHUB_REF_NAME#v}.vsix
         env:
           GH_TOKEN: ${{ github.token }}
+
+      - name: Publish to Open VSX
+        run: npx ovsx publish tree-sitter-mim-vscode-${GITHUB_REF_NAME#v}.vsix
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}

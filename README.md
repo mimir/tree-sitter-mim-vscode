@@ -21,7 +21,8 @@ This extension is a fork of [tree-sitter-vscode](https://github.com/AlecGhost/tr
 
 ## Installation
 
-Build a `.vsix` (see below), then run
+The extension is published on [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=MimIRExtensions.tree-sitter-mim-vscode) and [Open VSX](https://open-vsx.org/extension/MimIRExtensions/tree-sitter-mim-vscode), which VSCodium and other VS Code forks install from.
+You can also always download the `.vsix` from the [latest release](https://github.com/mimir/tree-sitter-mim-vscode/releases/latest) (or build one, see below) and run
 
 ```sh
 code --install-extension tree-sitter-mim-vscode-<version>.vsix
@@ -54,9 +55,15 @@ To pick up a newer grammar, update the `tree-sitter-mim` submodule and repackage
 
 ## Debug
 
-Open the project in VS Code, run `npm install` and `npm run package` (to build the `.wasm` parsers and queries), and press `F5`.
-This launches an Extension Development Host window with the extension loaded.
+Open the project in VS Code, run `npm install`, and press `F5`.
+This compiles the extension and launches an Extension Development Host window with it loaded.
+The first time, and after updating a grammar submodule, pick the **Run Extension (regenerate parsers)** launch configuration instead, which also builds the `.wasm` parsers and queries.
 Set breakpoints in the source code and reload the host window after making changes.
+
+## Releasing
+
+Bump `version` in `package.json`, add a `CHANGELOG.md` entry, and push a matching tag, e.g. `v0.3.0`.
+The [publish workflow](.github/workflows/publish.yml) packages the extension, attaches the `.vsix` to a GitHub release, and publishes it to Open VSX. VS Code Marketplace is currently not automated.
 
 ## License
 
