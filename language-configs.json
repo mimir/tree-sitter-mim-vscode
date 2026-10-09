@@ -55,9 +55,6 @@
             },
             "punctuation.special": {
                 "targetTokenType": "operator"
-            },
-            "punctuation": {
-                "targetTokenType": "operator"
             }
         },
         "folds": "${extension_dir}/queries/mim/folds.scm"
