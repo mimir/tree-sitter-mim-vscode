@@ -38,6 +38,12 @@
                     "defaultLibrary"
                 ]
             },
+            "variable.builtin": {
+                "targetTokenType": "variable",
+                "targetTokenModifiers": [
+                    "defaultLibrary"
+                ]
+            },
             "variable.parameter": {
                 "targetTokenType": "parameter"
             },
